@@ -13,7 +13,7 @@ This project is a full-stack web application built with:
 
 The development approach emphasizes effective and transparent use of AI tools such as ChatGPT throughout all project phases, enhancing productivity, accuracy, and creativity. As part of this effort, I also utilized DeepSeek to explore best practices, code structures, and optimization strategies. For UI inspiration and refinement, Dribbble.com was used to source professional design patterns and layout ideas.
 
-👉 If you’d like to see the live website, you can visit it here: https://la-home.qadi-tech.com/
+👉 If you’d like to see the live website, you can visit it here: https://lightseagreen-frog-201723.hostingersite.com/drivers
 
 ## 1. AI in User Stories & Planning
 
