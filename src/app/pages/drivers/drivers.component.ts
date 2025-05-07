@@ -481,19 +481,52 @@ export class DriversComponent {
   generateAIInsights(driver: any) {
     this.aiInsights = [];
     if (!driver) return;
-
-    const filtered = this.getFilteredKPIHistory(driver);
-    const avgRating = filtered.reduce((sum: any, e: any) => sum + e.driverRating, 0) / filtered.length;
-    const avgFuel = filtered.reduce((sum: any, e: any) => sum + e.fuelEfficiency, 0) / filtered.length;
-    const avgIdleTime = filtered.reduce((sum: any, e: any) => sum + e.idleTime, 0) / filtered.length;
-    const avgSpeed = filtered.reduce((sum: any, e: any) => sum + e.averageSpeed, 0) / filtered.length;
-
-    if (avgRating < 4.3) this.aiInsights.push("Consider driver coaching to improve ratings.");
-    if (avgFuel < 12) this.aiInsights.push("Fuel efficiency below average – review driving behavior.");
-    if (avgIdleTime > 1.5) this.aiInsights.push("High idle time – review stop durations.");
-    if (avgSpeed < 50) this.aiInsights.push("Average speed is low – check for route inefficiencies.");
+  
+    const selectedHistory = this.getFilteredKPIHistory(driver);
+    if (!selectedHistory.length) return;
+  
+    const otherDrivers = this.driverKpiHistory.filter((d: any) => d.id !== driver.id);
+    const otherHistories = otherDrivers.flatMap((d: any) => this.getFilteredKPIHistory(d));
+  
+    if (!otherHistories.length) return;
+  
+    const avg = (entries: any[], key: string) =>
+      entries.reduce((sum: number, e: any) => sum + (e[key] || 0), 0) / entries.length;
+  
+    const selected = {
+      rating: avg(selectedHistory, 'driverRating'),
+      fuel: avg(selectedHistory, 'fuelEfficiency'),
+      idle: avg(selectedHistory, 'idleTime'),
+      speed: avg(selectedHistory, 'averageSpeed')
+    };
+  
+    const others = {
+      rating: avg(otherHistories, 'driverRating'),
+      fuel: avg(otherHistories, 'fuelEfficiency'),
+      idle: avg(otherHistories, 'idleTime'),
+      speed: avg(otherHistories, 'averageSpeed')
+    };
+  
+    // Compare and push insights
+    this.aiInsights.push(
+      selected.rating < others.rating
+        ? `Driver rating (${selected.rating.toFixed(2)}) is below team average (${others.rating.toFixed(2)}). Consider training.`
+        : `Driver rating (${selected.rating.toFixed(2)}) exceeds team average (${others.rating.toFixed(2)}). Great work!`,
+  
+      selected.fuel < others.fuel
+        ? `Fuel efficiency (${selected.fuel.toFixed(1)} MPG) is below team average (${others.fuel.toFixed(1)} MPG).`
+        : `Fuel efficiency (${selected.fuel.toFixed(1)} MPG) is above team average (${others.fuel.toFixed(1)} MPG).`,
+  
+      selected.idle > others.idle
+        ? `Idle time (${selected.idle.toFixed(1)}h) is higher than team average (${others.idle.toFixed(1)}h). Consider reviewing stops.`
+        : `Idle time (${selected.idle.toFixed(1)}h) is better than team average (${others.idle.toFixed(1)}h).`,
+  
+      selected.speed < others.speed
+        ? `Average speed (${selected.speed.toFixed(1)} km/h) is below team average (${others.speed.toFixed(1)} km/h).`
+        : `Average speed (${selected.speed.toFixed(1)} km/h) is above team average (${others.speed.toFixed(1)} km/h).`
+    );
   }
-
+  
   selectRange(range: any) {
     this.selectedRange = range;
     this.updateChartOptions();

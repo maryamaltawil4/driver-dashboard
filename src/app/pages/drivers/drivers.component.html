@@ -44,6 +44,16 @@
     </div>
   </div>
 
+    <!-- AI Suggestions Section -->
+    <div *ngIf="aiInsights?.length" class="card border-0 shadow-sm mb-4">
+      <div class="card-body">
+        <h5 class="fw-bold text-danger">🤖 AI Suggestions</h5>
+        <ul class="list-group list-group-flush mt-3">
+          <li *ngFor="let insight of aiInsights" class="list-group-item px-0 border-0 text-muted">🔍 {{ insight }}</li>
+        </ul>
+      </div>
+    </div>
+    
   <!-- KPI Toggle + Cards -->
   <div class="card border-0 shadow-sm mb-4">
     <div class="card-body p-4">
